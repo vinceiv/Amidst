@@ -3,9 +3,7 @@ package com.mirrorlabs.vince.amidst;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -13,7 +11,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -33,7 +30,7 @@ public class ClipboardManipulater extends Service {
 
 
 
-    //On cr``
+    //Upon creation set up listener so that callback will be invoked
     public void onCreate() {
 
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
@@ -43,6 +40,7 @@ public class ClipboardManipulater extends Service {
 
     }
 
+    //Override clipboardmanagers onPrimaryClipChanged()
     ClipboardManager.OnPrimaryClipChangedListener listener =
             new ClipboardManager.OnPrimaryClipChangedListener() {
 
@@ -54,7 +52,6 @@ public class ClipboardManipulater extends Service {
     };
 
     @Override
-
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Let it continue running until it is stopped.
         Toast.makeText(this, "Clipboard Service Started", Toast.LENGTH_LONG).show();
@@ -82,10 +79,10 @@ public class ClipboardManipulater extends Service {
         //Print in log what was copied
         Log.d(TAG, recentClip);
 
-        //Check that clipboard dir exists
-        File mediaDir = new File(  );
-        if (!mediaDir.exists()){
-            mediaDir.mkdirs();
+        //Check that clipboard dir exists that contains all applications files
+        File LOG_FOLDER = new File(DIR_CLIPBOARD);
+        if (!LOG_FOLDER.exists()){
+            LOG_FOLDER.mkdirs();
             Toast.makeText(this, "Clipboard File Made", Toast.LENGTH_LONG).show();
 
         } else {
@@ -93,28 +90,26 @@ public class ClipboardManipulater extends Service {
         }
 
         //Create file object
-        File clipLog = new File( + FILE_CLIPBOARD);
-
-        Log.v(TAG, );
+        String filetest = DIR_CLIPBOARD + "/" + FILE_CLIPBOARD;
+        File LOG_FILE = new File(filetest);
 
             //if file exists try to write to it
-            if (clipLog.exists()) {
+            if (LOG_FILE.exists()) {
 
 
                 try {
 
-                    FileOutputStream fOut = openFileOutput( + FILE_CLIPBOARD
-                            , MODE_WORLD_READABLE);
+                    FileOutputStream fOut = new FileOutputStream(LOG_FILE);
 
                     OutputStreamWriter writer = new OutputStreamWriter(fOut);
                     writer.append(recentClip);
                     writer.flush();
                     writer.close();
 
-                    Toast.makeText(this, "try file exists", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "File exists check .txt for write", Toast.LENGTH_LONG).show();
 
                 }catch (IOException e) {
-                    Log.e( TAG , "FILEEXISTSFAIL");
+                    Log.e( TAG , "File ecists failed to write.");
                 }
 
             } else {
@@ -123,8 +118,8 @@ public class ClipboardManipulater extends Service {
 
 
                     try {
-                        clipLog.createNewFile();
-                        FileOutputStream fOut = openFileOutput(FILE_CLIPBOARD, MODE_WORLD_READABLE);
+                        LOG_FILE.createNewFile();
+                        FileOutputStream fOut = new FileOutputStream(LOG_FILE);
 
                         OutputStreamWriter writer = new OutputStreamWriter(fOut);
                         writer.append(recentClip);
@@ -134,8 +129,8 @@ public class ClipboardManipulater extends Service {
                         Toast.makeText(this, "else file created", Toast.LENGTH_LONG).show();
 
                     }catch (IOException e) {
-                        Log.e( TAG , .toString());
-                        Toast.makeText(this, "DIDNT EXIST FAILED" , Toast.LENGTH_LONG).show();
+                        Log.e( TAG ,"Failed creating and writing");
+                        Toast.makeText(this, "Failed creating and writing" , Toast.LENGTH_LONG).show();
 
                     }
 
