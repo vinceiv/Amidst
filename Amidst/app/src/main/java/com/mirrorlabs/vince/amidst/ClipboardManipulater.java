@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -22,11 +23,13 @@ import java.io.OutputStreamWriter;
 public class ClipboardManipulater extends Service {
 
 
-    private final String TAG = "CLIPBOARD";
+    private final String TAG = "CLIPBOARD_Service";
+    //private final String packageName = this.getPackageName();
+    private final String path = android.os.Environment.getExternalStorageDirectory()
+                                            .getAbsolutePath() + "/Amidst";
 
-    private final String DIR_CLIPBOARD = android.os.Environment.getExternalStorageDirectory()
-                                            .getAbsolutePath() + "/Clipboard";
-    private final String FILE_CLIPBOARD = "cblog.txt";
+    private final String FILE_CLIPBOARD = "/cblog.txt";
+
 
 
 
@@ -66,7 +69,7 @@ public class ClipboardManipulater extends Service {
 
     public void clipBoardActivated() {
 
-        ClipboardManager cb = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+        ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipboardContents contents = new ClipboardContents();
 
         Log.d(TAG, "Activated");
@@ -74,69 +77,63 @@ public class ClipboardManipulater extends Service {
         //this shit dont work
         ClipData clipData = cb.getPrimaryClip();
         contents.setClipData(clipData);
-        String recentClip = clipData.getItemAt(0).getText().toString();
+        String recentClip = clipData.getItemAt(0).getText().toString() + "\n";
 
         //Print in log what was copied
         Log.d(TAG, recentClip);
 
-        //Check that clipboard dir exists that contains all applications files
-        File LOG_FOLDER = new File(DIR_CLIPBOARD);
-        if (!LOG_FOLDER.exists()){
-            LOG_FOLDER.mkdirs();
-            Toast.makeText(this, "Clipboard File Made", Toast.LENGTH_LONG).show();
+        String state = Environment.getExternalStorageState();
 
-        } else {
-            Toast.makeText(this, "Clipboard File Exists", Toast.LENGTH_SHORT).show();
+        /*      Check to make sure sd is mounted.
+        *       Need to handle if external is not mounted!!!!
+        */
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+
+
+            try {
+
+                 /*     Check if file exists if not create the path
+                 *      Need to remove toast!
+                 */
+                 boolean exists = (new File(path)).exists();
+                 if (!exists) {
+                     new File(path).mkdirs();
+                     Toast.makeText(this, "Clipboard Path Made", Toast.LENGTH_LONG).show();
+                 }
+
+                /*
+                *       If the clipboardlog file does not exist create it
+                *
+                */
+                 File file = new File(path + FILE_CLIPBOARD);
+                 if (!file.exists()) {
+                     try {
+                     file.createNewFile();
+                     } catch (IOException e) {
+                        e.printStackTrace();
+                     }
+                 }
+
+
+                /*
+                *       Write string to file
+                */
+                FileOutputStream fOut = new FileOutputStream(path + FILE_CLIPBOARD, true);
+                OutputStreamWriter writer = new OutputStreamWriter(fOut);
+                writer.append(recentClip);
+                writer.flush();
+                writer.close();
+
+                Log.d(TAG, path + FILE_CLIPBOARD);
+
+                Toast.makeText(this, recentClip + " was written?", Toast.LENGTH_LONG).show();
+
+        } catch (IOException e){
+                e.printStackTrace();
         }
 
-        //Create file object
-        String filetest = DIR_CLIPBOARD + "/" + FILE_CLIPBOARD;
-        File LOG_FILE = new File(filetest);
-
-            //if file exists try to write to it
-            if (LOG_FILE.exists()) {
-
-
-                try {
-
-                    FileOutputStream fOut = new FileOutputStream(LOG_FILE);
-
-                    OutputStreamWriter writer = new OutputStreamWriter(fOut);
-                    writer.append(recentClip);
-                    writer.flush();
-                    writer.close();
-
-                    Toast.makeText(this, "File exists check .txt for write", Toast.LENGTH_LONG).show();
-
-                }catch (IOException e) {
-                    Log.e( TAG , "File ecists failed to write.");
-                }
-
-            } else {
-
-
-
-
-                    try {
-                        LOG_FILE.createNewFile();
-                        FileOutputStream fOut = new FileOutputStream(LOG_FILE);
-
-                        OutputStreamWriter writer = new OutputStreamWriter(fOut);
-                        writer.append(recentClip);
-                        writer.flush();
-                        writer.close();
-
-                        Toast.makeText(this, "else file created", Toast.LENGTH_LONG).show();
-
-                    }catch (IOException e) {
-                        Log.e( TAG ,"Failed creating and writing");
-                        Toast.makeText(this, "Failed creating and writing" , Toast.LENGTH_LONG).show();
-
-                    }
-
-
-            }
-
+        }
     }
 
 }
