@@ -25,10 +25,10 @@ public class ClipboardManipulater extends Service {
 
     private final String TAG = "CLIPBOARD_Service";
     //private final String packageName = this.getPackageName();
-    private final String path = android.os.Environment.getExternalStorageDirectory()
-                                            .getAbsolutePath() + "/Amidst";
+    private final String path = Environment.getExternalStorageDirectory()
+                                            .getAbsolutePath() + File.separator + "Amidsts";
 
-    private final String FILE_CLIPBOARD = "/cblog.txt";
+    private final String FILE_CLIPBOARD = "/cblogs.txt";
 
 
 
