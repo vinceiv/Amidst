@@ -26,14 +26,14 @@ tools:context=".MainActivity">
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:weightSum="2"
+        android:weightSum="6"
         >
 
         <ListView
         android:id="@+id/clipboard"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="4"
         tools:context=".MainActivity"
              />
 

@@ -22,6 +22,9 @@ import java.io.OutputStreamWriter;
  */
 public class ClipboardManipulater extends Service {
 
+    ClipboardManager cb;
+    ClipboardContents contents = new ClipboardContents();
+
 
     private final String TAG = "CLIPBOARD_Service";
     //private final String packageName = this.getPackageName();
@@ -31,13 +34,12 @@ public class ClipboardManipulater extends Service {
     private final String FILE_CLIPBOARD = "/cblogs.txt";
 
 
-
-
     //Upon creation set up listener so that callback will be invoked
     public void onCreate() {
 
-        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
-                .addPrimaryClipChangedListener(listener);
+       cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+
+       cb.addPrimaryClipChangedListener(listener);
 
         Log.v(TAG, "Listener created");
 
@@ -49,7 +51,9 @@ public class ClipboardManipulater extends Service {
 
         @Override
         public void onPrimaryClipChanged() {
-            clipBoardActivated();
+
+            ClipData clipData = cb.getPrimaryClip();
+            writeToClipboardFile(clipData);
 
         }
     };
@@ -61,21 +65,26 @@ public class ClipboardManipulater extends Service {
         onCreate();
         return START_STICKY;
     }
+
+    public void onDestroy(){
+        super.onDestroy();
+        cb.removePrimaryClipChangedListener(listener);
+    }
+
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-    public void clipBoardActivated() {
 
-        ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        ClipboardContents contents = new ClipboardContents();
+
+    public void writeToClipboardFile(ClipData clipData ) {
+
 
         Log.d(TAG, "Activated");
 
-        //this shit dont work
-        ClipData clipData = cb.getPrimaryClip();
         contents.setClipData(clipData);
         String recentClip = clipData.getItemAt(0).getText().toString() + "\n";
 
@@ -88,6 +97,9 @@ public class ClipboardManipulater extends Service {
         *       Need to handle if external is not mounted!!!!
         */
 
+        String mPreviousText = "";
+
+
         if (Environment.MEDIA_MOUNTED.equals(state)) {
 
 
@@ -96,42 +108,48 @@ public class ClipboardManipulater extends Service {
                  /*     Check if file exists if not create the path
                  *      Need to remove toast!
                  */
-                 boolean exists = (new File(path)).exists();
-                 if (!exists) {
-                     new File(path).mkdirs();
-                     Toast.makeText(this, "Clipboard Path Made", Toast.LENGTH_LONG).show();
-                 }
+                boolean exists = (new File(path)).exists();
+                if (!exists) {
+                    new File(path).mkdirs();
+                    Toast.makeText(this, "Clipboard Path Made", Toast.LENGTH_LONG).show();
+                }
 
                 /*
                 *       If the clipboardlog file does not exist create it
                 *
                 */
-                 File file = new File(path + FILE_CLIPBOARD);
-                 if (!file.exists()) {
-                     try {
-                     file.createNewFile();
-                     } catch (IOException e) {
+                File file = new File(path + FILE_CLIPBOARD);
+                if (!file.exists()) {
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
                         e.printStackTrace();
-                     }
-                 }
+                    }
+                }
+
+                if (!mPreviousText.equals(recentClip)){
+
 
 
                 /*
                 *       Write string to file
                 */
-                FileOutputStream fOut = new FileOutputStream(path + FILE_CLIPBOARD, true);
-                OutputStreamWriter writer = new OutputStreamWriter(fOut);
-                writer.append(recentClip);
-                writer.flush();
-                writer.close();
+                    FileOutputStream fOut = new FileOutputStream(path + FILE_CLIPBOARD, true);
+                    OutputStreamWriter writer = new OutputStreamWriter(fOut);
+                    writer.append(recentClip);
+                    writer.flush();
+                    writer.close();
 
-                Log.d(TAG, path + FILE_CLIPBOARD);
+                    Log.d(TAG, path + FILE_CLIPBOARD);
 
-                Toast.makeText(this, recentClip + " was written?", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, recentClip + " was written?", Toast.LENGTH_LONG).show();
 
-        } catch (IOException e){
+                    //handle the second call of primarycliplistener
+                    mPreviousText = recentClip;
+                }
+            } catch (IOException e) {
                 e.printStackTrace();
-        }
+            }
 
         }
     }

@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
 import android.app.Service;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -15,22 +16,20 @@ import java.util.List;
  */
 public class RecentApps extends Activity {
 
-   // ActivityManager activityManager = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
-   // List<ActivityManager.RunningAppProcessInfo> procInfo = activityManager.getRunningAppProcesses() ;
+  //
+  private List<ActivityManager.RunningAppProcessInfo> process;
+  private ActivityManager activityMan;
 
 
-   // ArrayList<String> packages = new ArrayList<String>();
-  //  for (int i = 0 ; i < procInfo.size(); )
 
-   // for (int i = 0; i < rtasks.size() ; i++) {
-      //  Log.d("Running task", "Running task: " + rtasks.get(i).baseActivity.toShortString() + "\t\t ID: " + tasks.get(i).id);
-       // String packageName = processes.processName.split(":")[0];
-        //if (!getPackageName().equals(packageName) && !rtasks.contains(packageName)) {
-        //    am.killBackgroundProcesses(packageName);
-        //}
-  //  }
+    public void onCreate(){
+        activityMan = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+        process = activityMan.getRunningAppProcesses();
 
+        for (ActivityManager.RunningAppProcessInfo processes : process) {
+            Log.v("ActivityManager: " , processes.toString()  );
+        }
+    }
 
-    //for(int k = 0 ; k < rtasks.size)
 
 }

@@ -27,12 +27,8 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    List<String> clipboardList = new LinkedList <String>();
-
-
-
-
-
+    protected List<String> clipboardList = new LinkedList <>();
+    protected RecentApps rApps;
 
 
 
@@ -42,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
         startService();
         setContentView(R.layout.activity_main);
 
+        rApps = new RecentApps();
+
+
+        clipboardList.add("Welcome to Amidst!");
 
         String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
                 + "Amidsts" ;
@@ -94,13 +94,14 @@ public class MainActivity extends AppCompatActivity {
 
         ListView lView = (ListView)findViewById(R.id.clipboard);
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,  clipboardList);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardList);
         lView.setAdapter(arrayAdapter);
     }
 
     public void startService() {
         startService(new Intent(getBaseContext(), ClipboardManipulater.class));
     }
+
 
 
     @Override
