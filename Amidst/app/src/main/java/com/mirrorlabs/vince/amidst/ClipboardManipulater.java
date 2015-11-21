@@ -26,7 +26,7 @@ public class ClipboardManipulater extends Service {
     ClipboardContents contents = new ClipboardContents();
 
 
-    private final String TAG = "CLIPBOARD_Service";
+    private final String TAG = "CLIPBOARD_SERVICE";
     //private final String packageName = this.getPackageName();
     private final String path = Environment.getExternalStorageDirectory()
                                             .getAbsolutePath() + File.separator + "Amidsts";
@@ -38,10 +38,9 @@ public class ClipboardManipulater extends Service {
     public void onCreate() {
 
        cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-
        cb.addPrimaryClipChangedListener(listener);
 
-        Log.v(TAG, "Listener created");
+        Log.v(TAG, "Listener Created");
 
     }
 
@@ -61,8 +60,7 @@ public class ClipboardManipulater extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Let it continue running until it is stopped.
-        Toast.makeText(this, "Clipboard Service Started", Toast.LENGTH_LONG).show();
-        onCreate();
+        Toast.makeText(this, "Clipboard Service Started", Toast.LENGTH_SHORT).show();
         return START_STICKY;
     }
 
@@ -83,7 +81,7 @@ public class ClipboardManipulater extends Service {
     public void writeToClipboardFile(ClipData clipData ) {
 
 
-        Log.d(TAG, "Activated");
+        Log.d(TAG, "Clipboard_Activated");
 
         contents.setClipData(clipData);
         String recentClip = clipData.getItemAt(0).getText().toString() + "\n";
@@ -142,7 +140,7 @@ public class ClipboardManipulater extends Service {
 
                     Log.d(TAG, path + FILE_CLIPBOARD);
 
-                    Toast.makeText(this, recentClip + " was written?", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, recentClip + " was copied.", Toast.LENGTH_SHORT).show();
 
                     //handle the second call of primarycliplistener
                     mPreviousText = recentClip;

@@ -28,17 +28,16 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     protected List<String> clipboardList = new LinkedList <>();
-    protected RecentApps rApps;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         startService();
         setContentView(R.layout.activity_main);
 
-        rApps = new RecentApps();
 
 
         clipboardList.add("Welcome to Amidst!");
@@ -100,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void startService() {
         startService(new Intent(getBaseContext(), ClipboardManipulater.class));
+        startService(new Intent(getBaseContext(), RecentApps.class));
     }
 
 
