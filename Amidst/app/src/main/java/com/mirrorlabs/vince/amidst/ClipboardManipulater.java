@@ -1,14 +1,19 @@
 package com.mirrorlabs.vince.amidst;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
+import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import java.io.File;
@@ -24,6 +29,16 @@ public class ClipboardManipulater extends Service {
 
     ClipboardManager cb;
     ClipboardContents contents = new ClipboardContents();
+
+
+    public void broadcastCustomIntent(String clipData){
+
+        Intent intent = new Intent("ClipboardUpdated");
+        intent.putExtra("clip" , clipData);
+        sendBroadcast(intent);
+        Log.v("BROADCASTED: ", clipData);
+
+    }
 
 
     private final String TAG = "CLIPBOARD_SERVICE";
@@ -52,7 +67,9 @@ public class ClipboardManipulater extends Service {
         public void onPrimaryClipChanged() {
 
             ClipData clipData = cb.getPrimaryClip();
+            String temp = clipData.toString();
             writeToClipboardFile(clipData);
+            broadcastCustomIntent(temp);
 
         }
     };
@@ -61,6 +78,7 @@ public class ClipboardManipulater extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Let it continue running until it is stopped.
         Toast.makeText(this, "Clipboard Service Started", Toast.LENGTH_SHORT).show();
+
         return START_STICKY;
     }
 
@@ -83,7 +101,9 @@ public class ClipboardManipulater extends Service {
 
         Log.d(TAG, "Clipboard_Activated");
 
-        contents.setClipData(clipData);
+        //dont think i need if i remember correctly
+       // contents.setClipData(clipData);
+
         String recentClip = clipData.getItemAt(0).getText().toString() + "\n";
 
         //Print in log what was copied
