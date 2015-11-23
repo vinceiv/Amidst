@@ -32,18 +32,20 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    protected List<String> clipboardList = new LinkedList<>();
+    private ListView lView;
+    protected LinkedList<String> clipboardList = new LinkedList<>();
     ArrayAdapter<String> arrayAdapter;
-    ListView lView;
 
+    String lastLine = "";
 
     String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
             + "Amidsts";
 
-    File file = new File(PATH + File.separator + "cblogs.txt");
+     File file = new File(PATH + File.separator + "cblogs.txt");
 
 
     protected List getClipboardList() {
+        clipboardList.clear();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line = br.readLine();
@@ -51,8 +53,9 @@ public class MainActivity extends AppCompatActivity {
 
             while (line != null) {
                 clipboardList.add(line);
-                line = br.readLine();
+                lastLine = line;
 
+                line = br.readLine();
             }
 
 
@@ -100,38 +103,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        /*
+        List<String> clipboardList = new LinkedList<>(getClipboardList());
 
-        Read file line by line,
-        add each line to link list.
-            !!!! Moved to method temporarily
-         */
-        // try {
-        //     BufferedReader br = new BufferedReader(new FileReader(file));
-        //    String line = br.readLine();
-
-
-        //   while (line != null) {
-        //      clipboardList.add(line);
-        //      line = br.readLine();
-
-        //  }
-
-
-        // }catch (IOException e){
-        //     e.printStackTrace();
-
-
-        // for (int i = clipboardList.size(); i >= 0 ;  --i){
-
-        //   String temp = clipboardList.get(i);
-        // reverseClipboard.add(temp);
-        List<String> clipboardlists = new LinkedList<>(getClipboardList());
-
-        Collections.reverse(clipboardlists);
+        Collections.reverse(clipboardList);
+        clipboardList.add(0, lastLine);
 
         lView = (ListView)findViewById(R.id.clipboard);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardlists);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardList);
+
         lView.setAdapter(arrayAdapter);
 
     }
@@ -161,13 +140,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
 
-        List<String> newcliplists = new LinkedList<>(getClipboardList());
-        Collections.reverse(newcliplists);
-        ArrayAdapter<String> temparrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  newcliplists);
+      //List<String> newcliplists = new LinkedList<>(getClipboardList());
+     //  Collections.reverse(newcliplists);
+
+        clipboardList.clear();
+        clipboardList.addAll(getClipboardList());
+        Collections.reverse(clipboardList);
+        clipboardList.add(0 , lastLine);
+
+        //ArrayAdapter<String> temparrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardList);
+
+       // temparrayAdapter.notifyDataSetChanged();
+        //lView = (ListView)findViewById(R.id.clipboard);
+
+       //lView.setAdapter(temparrayAdapter);
+        arrayAdapter.notifyDataSetChanged();
 
 
-
-        lView.setAdapter(temparrayAdapter);
 
     }
 

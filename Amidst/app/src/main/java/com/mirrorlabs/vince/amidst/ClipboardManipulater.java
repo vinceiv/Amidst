@@ -154,8 +154,8 @@ public class ClipboardManipulater extends Service {
                 */
                     FileOutputStream fOut = new FileOutputStream(path + FILE_CLIPBOARD, true);
                     OutputStreamWriter writer = new OutputStreamWriter(fOut);
-                    writer.append(recentClip);
                     writer.flush();
+                    writer.append(recentClip);
                     writer.close();
 
                     Log.d(TAG, path + FILE_CLIPBOARD);
