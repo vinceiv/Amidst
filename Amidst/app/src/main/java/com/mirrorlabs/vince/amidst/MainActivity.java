@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected LinkedList<String> clipboardList = new LinkedList<>();
     ArrayAdapter<String> arrayAdapter;
 
+
     String lastLine = "";
 
     String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
@@ -58,10 +59,14 @@ public class MainActivity extends AppCompatActivity {
                 line = br.readLine();
             }
 
+            br.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Collections.reverse(clipboardList);
+        clipboardList.add(0, lastLine);
         return clipboardList;
     }
 
@@ -102,14 +107,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         List<String> clipboardList = new LinkedList<>(getClipboardList());
 
-        Collections.reverse(clipboardList);
-        clipboardList.add(0, lastLine);
+
 
         lView = (ListView)findViewById(R.id.clipboard);
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardList);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  getClipboardList());
+
 
         lView.setAdapter(arrayAdapter);
 
@@ -137,24 +141,28 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onStop(){
-        super.onStop();
+    protected void onPause(){
+        super.onPause();
 
-      //List<String> newcliplists = new LinkedList<>(getClipboardList());
-     //  Collections.reverse(newcliplists);
+        //List<String> newcliplists = new LinkedList<>(getClipboardList());
+        //  Collections.reverse(newcliplists);
 
         clipboardList.clear();
         clipboardList.addAll(getClipboardList());
-        Collections.reverse(clipboardList);
-        clipboardList.add(0 , lastLine);
+
+        Toast.makeText(this, "ONWHATEVER CALLED", Toast.LENGTH_SHORT).show();
+
+        arrayAdapter.notifyDataSetChanged();
 
         //ArrayAdapter<String> temparrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardList);
 
-       // temparrayAdapter.notifyDataSetChanged();
+        //lView.removeAllViews();
+     //   lView = (ListView)findViewById(R.id.clipboard);
+
+        // temparrayAdapter.notifyDataSetChanged();
         //lView = (ListView)findViewById(R.id.clipboard);
 
-       //lView.setAdapter(temparrayAdapter);
-        arrayAdapter.notifyDataSetChanged();
+        //lView.setAdapter(arrayAdapter);
 
 
 
