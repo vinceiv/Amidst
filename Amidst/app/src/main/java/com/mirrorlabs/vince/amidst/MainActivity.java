@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Collections.reverse(clipboardList);
-        clipboardList.add(0, lastLine);
+        //clipboardList.add(0, lastLine);
         return clipboardList;
     }
 
@@ -75,6 +76,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+       // getSupportActionBar().setDisplayUseLogoEnabled(true);
+      //  getSupportActionBar().setLogo(R.drawable.ic_launcher);
+        //getSupportActionBar().setDisplayUseLogoEnabled(true);
+
+
+
+      //  actionBar.setDisplayHomeAsUpEnabled(true);
+       // actionBar.setDisplayUseLogoEnabled(true);
+       // actionBar.setLogo(R.mipmap.ic_launcher);
 
         startService();
         setContentView(R.layout.activity_main);
@@ -113,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
         lView = (ListView)findViewById(R.id.clipboard);
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  getClipboardList());
-
 
         lView.setAdapter(arrayAdapter);
 
@@ -168,11 +178,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //set to false to remove options
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        return false;
     }
 
     @Override
