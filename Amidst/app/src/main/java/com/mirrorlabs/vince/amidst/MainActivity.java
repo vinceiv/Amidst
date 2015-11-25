@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -76,20 +77,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-       // getSupportActionBar().setDisplayUseLogoEnabled(true);
-      //  getSupportActionBar().setLogo(R.drawable.ic_launcher);
-        //getSupportActionBar().setDisplayUseLogoEnabled(true);
-
-
-
-      //  actionBar.setDisplayHomeAsUpEnabled(true);
-       // actionBar.setDisplayUseLogoEnabled(true);
-       // actionBar.setLogo(R.mipmap.ic_launcher);
+         //attempting to put logo next to app title in titlebar
+         //getSupportActionBar().setDisplayUseLogoEnabled(true);
+         //getSupportActionBar().setLogo(R.drawable.ic_launcher);
+         //getSupportActionBar().setDisplayUseLogoEnabled(true);
+         //actionBar.setDisplayHomeAsUpEnabled(true);
+         //actionBar.setDisplayUseLogoEnabled(true);
+         //actionBar.setLogo(R.mipmap.ic_launcher);
 
         startService();
         setContentView(R.layout.activity_main);
 
+        //catch intents -- still needs work
         registerReceiver(mReceiver, new IntentFilter("clip"));
 
 
@@ -125,9 +124,15 @@ public class MainActivity extends AppCompatActivity {
         lView = (ListView)findViewById(R.id.clipboard);
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  getClipboardList());
 
+
+
+
         lView.setAdapter(arrayAdapter);
 
+
+
     }
+
 
 
     public void startService() {
@@ -167,14 +172,10 @@ public class MainActivity extends AppCompatActivity {
         //ArrayAdapter<String> temparrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardList);
 
         //lView.removeAllViews();
-     //   lView = (ListView)findViewById(R.id.clipboard);
-
+        //   lView = (ListView)findViewById(R.id.clipboard);
         // temparrayAdapter.notifyDataSetChanged();
         //lView = (ListView)findViewById(R.id.clipboard);
-
         //lView.setAdapter(arrayAdapter);
-
-
 
     }
 
