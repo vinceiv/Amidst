@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -162,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
         //List<String> clipboardList = new LinkedList<>(getItems());
         List<ClipboardItem> clipboardItems = new LinkedList<>(getItems());
 
-        adapter = new CustomListAdapter(this, clipboardItems);
 
 
 
@@ -172,7 +172,15 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        lView.setAdapter(adapter);
+
+
+
+
+        //adapter = new CustomListAdapter(this, clipboardItems);
+
+
+
+       // lView.setAdapter(adapter);
 
 
 
@@ -213,10 +221,19 @@ public class MainActivity extends AppCompatActivity {
         clipboardItems.addAll(getItems());
 
 
-        Toast.makeText(this, "ONWHATEVER CALLED", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "ONRESUME CALLED", Toast.LENGTH_SHORT).show();
 
 
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
+
+        adapter = new CustomListAdapter(this, clipboardItems);
+
+
+
+        lView.setAdapter(adapter);
+
+
+
         //arrayAdapter.notifyDataSetChanged();
 
         //ArrayAdapter<String> temparrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardList);
