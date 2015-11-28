@@ -11,16 +11,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textSize="15dip"
+        />
 
     <!-- Rating -->
     <TextView
         android:id="@+id/timestamp"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/clip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:typeface="sans"
+        android:textSize="10dip"
         android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/clip" />
+       />
 
 
 
