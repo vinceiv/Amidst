@@ -79,14 +79,18 @@ public class ClipboardManipulater extends Service {
                     ClipData clipData = cb.getPrimaryClip();
                     //broadcastCustomIntent(temp);
                     String clips = clipData.getItemAt(0).getText().toString();
-                    Long tsLong = System.currentTimeMillis() / 1000;
+                    String tsLong = String.valueOf(System.currentTimeMillis() / 1000);
 
                     JSONObject jsobj = new JSONObject();
 
+
+
+                    Boolean test = false;
                     try {
+
                         jsobj.put("Clip", clips);
                         jsobj.put("Time", tsLong);
-                        jsobj.put("Star", false);
+                        jsobj.put("Star", test);
                         Log.d("json" , "json");
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -181,6 +185,7 @@ public class ClipboardManipulater extends Service {
 
                                 //handle the second call of primarycliplistener
                                 mPreviousText = trueClip;
+                    //fix possible parsing exception?
                     bW.newLine();
                     bW.close();
                 }

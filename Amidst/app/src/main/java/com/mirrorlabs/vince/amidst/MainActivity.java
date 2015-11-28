@@ -21,6 +21,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.*;
+import org.json.simple.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -37,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView lView;
     protected LinkedList<String> clipboardList = new LinkedList<>();
     ArrayAdapter<String> arrayAdapter;
+    private List<ClipboardItem> clipboardItems = new LinkedList<>();
+    private CustomListAdapter adapter;
 
 
     String lastLine = "";
@@ -47,29 +56,62 @@ public class MainActivity extends AppCompatActivity {
      File file = new File(PATH + File.separator + "cblogs.txt");
 
 
-    protected List getClipboardList() {
-        clipboardList.clear();
+    protected List getItems() {
+        clipboardItems.clear();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line = br.readLine();
 
 
-            while (line != null) {
-                clipboardList.add(line);
-                lastLine = line;
 
-                line = br.readLine();
+            while (line != null) {
+
+
+                //Throws JSON error
+                try {
+
+
+
+                    //JSONObject obj = new JSONObject(line);
+
+                    JSONParser jsonParser = new JSONParser();
+                    JSONObject obj =(JSONObject)jsonParser.parse(line);
+
+
+
+
+                    String title = (String)obj.get("Clip");
+                    String timestamp = obj.get("Time").toString();
+                    //String isStarred = (String)obj.get("Star");
+
+                    Boolean test = (Boolean)obj.get("Star");
+                    //Boolean test = Boolean.getBoolean(isStarred);
+
+
+                    //create new clipboard item with parsed contextual info of clip
+                    ClipboardItem parsedItem = new ClipboardItem(title, timestamp , test);
+                    //add item to clipboardList that will populate the custom adapter
+                    clipboardItems.add(0, parsedItem);
+
+
+                    //clipboardList.add(line);
+                    lastLine = line;
+                    line = br.readLine();
+                } catch(ParseException ex){
+                    ex.printStackTrace();
+                }
             }
 
+            //close and flush buffered reader to push out last saved string
             br.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Collections.reverse(clipboardList);
+        //Collections.reverse(clipboardList);
         //clipboardList.add(0, lastLine);
-        return clipboardList;
+        return clipboardItems;
     }
 
 
@@ -117,17 +159,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        List<String> clipboardList = new LinkedList<>(getClipboardList());
+        //List<String> clipboardList = new LinkedList<>(getItems());
+        List<ClipboardItem> clipboardItems = new LinkedList<>(getItems());
+
+        adapter = new CustomListAdapter(this, clipboardItems);
 
 
 
         lView = (ListView)findViewById(R.id.clipboard);
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  getClipboardList());
+        //arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  getClipboardList());
 
 
 
 
-        lView.setAdapter(arrayAdapter);
+        lView.setAdapter(adapter);
 
 
 
@@ -162,12 +207,17 @@ public class MainActivity extends AppCompatActivity {
         //List<String> newcliplists = new LinkedList<>(getClipboardList());
         //  Collections.reverse(newcliplists);
 
-        clipboardList.clear();
-        clipboardList.addAll(getClipboardList());
+        //clipboardList.clear();
+        //clipboardList.addAll(getClipboardList());
+        clipboardItems.clear();
+        clipboardItems.addAll(getItems());
+
 
         Toast.makeText(this, "ONWHATEVER CALLED", Toast.LENGTH_SHORT).show();
 
-        arrayAdapter.notifyDataSetChanged();
+
+        adapter.notifyDataSetChanged();
+        //arrayAdapter.notifyDataSetChanged();
 
         //ArrayAdapter<String> temparrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,  clipboardList);
 

@@ -20,12 +20,14 @@ tools:context=".MainActivity">
         android:weightSum="6"
         >
 
+        //changed from @+id/clipboard =->
         <ListView
         android:id="@+id/clipboard"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
-        tools:context=".MainActivity"
+            tools:context=".MainActivity"
+
              />
 
 
