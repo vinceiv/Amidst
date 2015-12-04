@@ -8,13 +8,19 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by vince on 11/25/15.
+ *
+ * NEED TO ADJUST TIME POSTING BASED ON HOW RECENT
+ * IF POSTED SAME DAY AS BEING READ PUT HOW MANY HOURS AGO
+ * IF POSTED WITHIN THE HOUR PUT "WITHIN THE HOUR"
  */
+
 public class CustomListAdapter extends BaseAdapter {
     private Activity activity;
     private LayoutInflater inflater;
@@ -55,9 +61,21 @@ public class CustomListAdapter extends BaseAdapter {
 
         ClipboardItem row = clipboardItems.get(position);
 
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd");
+        Date datePosted = new Date(row.getTimestamp());
+
+
+        //Date todaysDate = new Date(System.currentTimeMillis());
+
+        //if (simpleDateFormat.format(datePosted).equals(simpleDateFormat.format(todaysDate))){
+        //    SimpleDateFormat hourDifference = new SimpleDateFormat("hh:mm");
+
+
+
         clipString.setText(row.getTitle());
        // starred.setText(row.getIsStarred());
-        timestamp.setText(row.getTimestamp());
+        timestamp.setText(simpleDateFormat.format(datePosted));
 
         return convertView;
 

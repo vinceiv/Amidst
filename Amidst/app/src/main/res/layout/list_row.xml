@@ -5,13 +5,14 @@
     android:padding="8dp" >
 
 
-    <!--  -->
+    <!-- Clip -->
     <TextView
         android:id="@+id/clip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:textStyle="bold"
+        android:linksClickable="true"
+        android:textIsSelectable="true"
         android:textSize="15dip"
         />
 
@@ -24,6 +25,7 @@
         android:layout_alignParentRight="true"
         android:typeface="sans"
         android:textSize="10dip"
+        android:paddingTop="25dp"
         android:layout_marginTop="1dip"
        />
 

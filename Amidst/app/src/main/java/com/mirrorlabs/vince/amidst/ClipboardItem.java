@@ -7,13 +7,13 @@ public class ClipboardItem {
 
 
     private String title;
-    private String timestamp;
+    private Long timestamp;
     private boolean isStarred;
 
     public ClipboardItem(){
     }
 
-    public ClipboardItem (String title, String timestamp, boolean isStarred){
+    public ClipboardItem (String title, Long timestamp, boolean isStarred){
         this.title = title;
         this.timestamp = timestamp;
         this.isStarred = isStarred;
@@ -27,11 +27,11 @@ public class ClipboardItem {
         this.title = title;
     }
 
-    public String getTimestamp(){
+    public Long getTimestamp(){
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp){
+    public void setTimestamp(Long timestamp){
         this.timestamp = timestamp;
     }
 
