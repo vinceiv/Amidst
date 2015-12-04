@@ -116,24 +116,44 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-         //attempting to put logo next to app title in titlebar
-         //getSupportActionBar().setDisplayUseLogoEnabled(true);
-         //getSupportActionBar().setLogo(R.drawable.ic_launcher);
-         //getSupportActionBar().setDisplayUseLogoEnabled(true);
-         //actionBar.setDisplayHomeAsUpEnabled(true);
-         //actionBar.setDisplayUseLogoEnabled(true);
-         //actionBar.setLogo(R.mipmap.ic_launcher);
-
         startService();
         setContentView(R.layout.activity_main);
 
         //catch intents -- still needs work
         registerReceiver(mReceiver, new IntentFilter("clip"));
 
+        initApp();
+
+        List<ClipboardItem> clipboardItems = new LinkedList<>(getItems());
+
+        adapter = new CustomListAdapter(this, clipboardItems);
 
 
 
+        lView = (ListView)findViewById(R.id.clipboard);
+        lView.setAdapter(adapter);
 
+
+        lView.setOnItemClickListener(new ListView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                ClipboardItem test = (ClipboardItem)lView.getAdapter().getItem(position);
+                String str = test.getTitle();
+                Toast.makeText(getBaseContext(), str, Toast.LENGTH_SHORT).show();
+            }
+
+
+        });
+
+        //CustomListAdapter updatedadapter = new CustomListAdapter(this, getItems());
+
+
+    }
+
+
+    public void initApp(){
         /*     Check if file exists if not create the path
          *      Need to remove toast!
          */
@@ -170,35 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
-        List<ClipboardItem> clipboardItems = new LinkedList<>(getItems());
-
-        adapter = new CustomListAdapter(this, clipboardItems);
-
-
-
-        lView = (ListView)findViewById(R.id.clipboard);
-
-
-
-        //CustomListAdapter updatedadapter = new CustomListAdapter(this, getItems());
-        lView.setAdapter(adapter);
-
-        lView.setOnItemClickListener(new ListView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String main = lView.getSelectedItem().toString();
-                Log.v("Item was clicked on" , main);
-            }
-
-
-        });
     }
-
-
-
 
     public void startService() {
         startService(new Intent(getBaseContext(), ClipboardManipulater.class));

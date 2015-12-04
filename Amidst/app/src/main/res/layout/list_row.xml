@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:linksClickable="true"
-        android:textIsSelectable="true"
         android:textSize="15dip"
         />
 
