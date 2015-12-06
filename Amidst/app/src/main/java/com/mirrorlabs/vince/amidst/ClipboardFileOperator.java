@@ -1,5 +1,6 @@
 package com.mirrorlabs.vince.amidst;
 
+import android.content.ClipboardManager;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -7,15 +8,17 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 /**
  * Created by vince on 12/1/15.
  */
-public class FileOperator {
+public class ClipboardFileOperator {
 
 
     private final String path = Environment.getExternalStorageDirectory()
@@ -25,7 +28,28 @@ public class FileOperator {
     private String mPreviousText = "";
     private final String TAG = "FILE_OPERATOR";
 
+    String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
+            + "Amidsts";
 
+    File file = new File(PATH + File.separator + "cblogs.txt");
+
+
+    //public void removeItemFromClipboardFile(String removeItem){
+
+     //   CharSequence checkFor = removeItem;
+
+     //   try{
+      //      BufferedReader br = new BufferedReader(new FileReader(file));
+      //      String bufferedLine = br.readLine();
+
+        //    while (bufferedLine != null ){
+        //        if (bufferedLine.contains(removeItem))
+        //        {
+
+        //    }
+      //  }
+
+   // }}
 
 
 

@@ -27,7 +27,7 @@
 
         <service
             android:enabled="true"
-            android:name=".ClipboardManipulater"
+            android:name=".ClipboardListenerService"
             />
 
 

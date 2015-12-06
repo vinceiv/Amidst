@@ -1,14 +1,11 @@
 package com.mirrorlabs.vince.amidst;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Environment;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -22,12 +19,33 @@ import org.json.JSONObject;
 /**
  * Created by vince on 11/8/15.
  */
-public class ClipboardManipulater extends Service {
+public class ClipboardListenerService extends Service {
 
     private final String TAG = "CLIPBOARD_SERVICE";
-    private FileOperator fileOperator = new FileOperator();
-
+    private ClipboardFileOperator fileOperator = new ClipboardFileOperator();
     protected ClipboardManager cb;
+
+    IBinder binder = new LocalBinder();
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+    public class LocalBinder extends Binder {
+        public ClipboardListenerService getServerInstance() {
+            return ClipboardListenerService.this;
+        }
+    }
+
+    public void copyItemToClipboard(String copyThisString){
+
+
+        CharSequence item = copyThisString;
+
+        ClipData newClip = ClipData.newPlainText("test" , item);
+        cb.setPrimaryClip(newClip);
+
+    }
 
 
     public void broadcastCustomIntent(String clipData) {
@@ -101,9 +119,8 @@ public class ClipboardManipulater extends Service {
     }
 
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+
+
+
+
 }

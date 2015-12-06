@@ -1,11 +1,15 @@
 package com.mirrorlabs.vince.amidst;
 
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -14,7 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private List<ClipboardItem> clipboardItems = new LinkedList<>();
     private CustomListAdapter adapter;
 
+    ClipboardListenerService listenerService;
+
+
+
 
     String lastLine = "";
 
@@ -47,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
 
      File file = new File(PATH + File.separator + "cblogs.txt");
 
-
+    /*
+    This needs moved to file operator
+     */
     protected List getItems() {
 
         clipboardItems.clear();
@@ -119,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
         startService();
         setContentView(R.layout.activity_main);
 
+
+
         //catch intents -- still needs work
         registerReceiver(mReceiver, new IntentFilter("clip"));
 
@@ -139,9 +150,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                ClipboardItem test = (ClipboardItem)lView.getAdapter().getItem(position);
+                ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
                 String str = test.getTitle();
-                Toast.makeText(getBaseContext(), str, Toast.LENGTH_SHORT).show();
+                listenerService.copyItemToClipboard(str);
+                Toast.makeText(getBaseContext(), str.substring(0 , ((int)str.length()/2)) + "... has been copied.", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -153,6 +165,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceDisconnected(ComponentName name) {
+            Toast.makeText(getBaseContext(), "Service is disconnected", 1000).show();
+        }
+
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Toast.makeText(getBaseContext(), "Service is connected", 1000).show();
+            ClipboardListenerService.LocalBinder mLocalBinder = (ClipboardListenerService.LocalBinder)service;
+            listenerService = mLocalBinder.getServerInstance();
+        }
+    };
+
+
+
+    /*
+    Need to move this method to FILEOPERATOR class.
+     */
     public void initApp(){
         /*     Check if file exists if not create the path
          *      Need to remove toast!
@@ -173,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 file.createNewFile();
                 Toast.makeText(this, "Clipboard File Made", Toast.LENGTH_SHORT).show();
 
-                FileOperator fileOperator = new FileOperator();
+                ClipboardFileOperator fileOperator = new ClipboardFileOperator();
 
                 org.json.JSONObject jsobj = new org.json.JSONObject();
                 try {
@@ -193,7 +222,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startService() {
-        startService(new Intent(getBaseContext(), ClipboardManipulater.class));
+
+        Intent mIntent = new Intent(this, ClipboardListenerService.class);
+        bindService(mIntent, mConnection, BIND_AUTO_CREATE);
+
+
+
+       // startService(new Intent(getBaseContext(), ClipboardListenerService.class));
+
         startService(new Intent(getBaseContext(), RecentApps.class));
     }
 
