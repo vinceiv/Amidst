@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
                 ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
                 String str = test.getTitle();
+                listenerService.setFlagForRepeate(true);
                 listenerService.copyItemToClipboard(str);
                 Toast.makeText(getBaseContext(), str.substring(0 , ((int)str.length()/2)) + "... has been copied.", Toast.LENGTH_SHORT).show();
             }

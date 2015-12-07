@@ -32,6 +32,8 @@ public class ClipboardFileOperator {
             + "Amidsts";
 
     File file = new File(PATH + File.separator + "cblogs.txt");
+    private boolean flagForRepeate = false;
+
 
 
     //public void removeItemFromClipboardFile(String removeItem){
@@ -50,6 +52,7 @@ public class ClipboardFileOperator {
       //  }
 
    // }}
+
 
 
 

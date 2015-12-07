@@ -24,6 +24,7 @@ public class ClipboardListenerService extends Service {
     private final String TAG = "CLIPBOARD_SERVICE";
     private ClipboardFileOperator fileOperator = new ClipboardFileOperator();
     protected ClipboardManager cb;
+    private boolean flagForRepeate = false;
 
     IBinder binder = new LocalBinder();
 
@@ -35,6 +36,10 @@ public class ClipboardListenerService extends Service {
         public ClipboardListenerService getServerInstance() {
             return ClipboardListenerService.this;
         }
+    }
+
+    public void setFlagForRepeate (boolean flag){
+        flagForRepeate = flag;
     }
 
     public void copyItemToClipboard(String copyThisString){
@@ -86,19 +91,22 @@ public class ClipboardListenerService extends Service {
                     JSONObject jsobj = new JSONObject();
 
 
-
                     Boolean test = false;
                     try {
 
                         jsobj.put("Clip", clips);
                         jsobj.put("Time", currentTime);
                         jsobj.put("Star", test);
-                        Log.d("json" , "json");
+                        Log.d("json", "json");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    fileOperator.writeToClipboardFile(jsobj);
+
+                    if (!flagForRepeate) {
+                        fileOperator.writeToClipboardFile(jsobj);
+
+                    }
 
                 }
 
