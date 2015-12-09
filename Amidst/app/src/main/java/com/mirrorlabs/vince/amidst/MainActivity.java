@@ -152,13 +152,16 @@ public class MainActivity extends AppCompatActivity {
 
                 ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
                 String str = test.getTitle();
-                listenerService.setFlagForRepeate(true);
+                listenerService.setFlagForRepeat(true);
                 listenerService.copyItemToClipboard(str);
                 Toast.makeText(getBaseContext(), str.substring(0 , ((int)str.length()/2)) + "... has been copied.", Toast.LENGTH_SHORT).show();
             }
 
 
         });
+
+
+
 
         //CustomListAdapter updatedadapter = new CustomListAdapter(this, getItems());
 
@@ -252,6 +255,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
+        lView.invalidate();
+        CustomListAdapter difadapter = new CustomListAdapter(this, getItems());
+        lView.setAdapter(difadapter);
 
 
         Toast.makeText(this, "ONRESUME CALLED", Toast.LENGTH_SHORT).show();

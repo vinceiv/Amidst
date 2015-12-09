@@ -24,7 +24,7 @@ public class ClipboardListenerService extends Service {
     private final String TAG = "CLIPBOARD_SERVICE";
     private ClipboardFileOperator fileOperator = new ClipboardFileOperator();
     protected ClipboardManager cb;
-    private boolean flagForRepeate = false;
+    private boolean flagForRepeat = false;
 
     IBinder binder = new LocalBinder();
 
@@ -38,8 +38,8 @@ public class ClipboardListenerService extends Service {
         }
     }
 
-    public void setFlagForRepeate (boolean flag){
-        flagForRepeate = flag;
+    public void setFlagForRepeat (boolean flag){
+        flagForRepeat = flag;
     }
 
     public void copyItemToClipboard(String copyThisString){
@@ -103,10 +103,12 @@ public class ClipboardListenerService extends Service {
                     }
 
 
-                    if (!flagForRepeate) {
+                    if (!flagForRepeat) {
                         fileOperator.writeToClipboardFile(jsobj);
 
                     }
+
+                    setFlagForRepeat(false);
 
                 }
 
