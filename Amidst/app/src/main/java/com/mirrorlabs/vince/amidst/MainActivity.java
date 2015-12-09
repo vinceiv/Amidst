@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> arrayAdapter;
     private List<ClipboardItem> clipboardItems = new LinkedList<>();
     private CustomListAdapter adapter;
-
+    private ClipboardFileOperator clipboardFileOperator = new ClipboardFileOperator();
     ClipboardListenerService listenerService;
 
 
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
         initApp();
 
-        List<ClipboardItem> clipboardItems = new LinkedList<>(getItems());
+        final List<ClipboardItem> clipboardItems = new LinkedList<>(getItems());
 
         adapter = new CustomListAdapter(this, clipboardItems);
 
@@ -154,12 +154,26 @@ public class MainActivity extends AppCompatActivity {
                 String str = test.getTitle();
                 listenerService.setFlagForRepeat(true);
                 listenerService.copyItemToClipboard(str);
-                Toast.makeText(getBaseContext(), str.substring(0 , ((int)str.length()/2)) + "... has been copied.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), str  + "... has been copied.", Toast.LENGTH_SHORT).show();
             }
 
 
         });
 
+        lView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
+                String item = test.getTitle();
+                clipboardFileOperator.removeItemFromClipboardFile(item);
+                adapter.remove(position);
+                adapter.notifyDataSetChanged();
+                lView.setAdapter(adapter);
+                Toast.makeText(getBaseContext() , item + " has been deleted." , Toast.LENGTH_SHORT ).show();
+                return true;
+            }
+        });
 
 
 

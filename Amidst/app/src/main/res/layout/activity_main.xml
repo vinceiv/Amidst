@@ -41,9 +41,11 @@ tools:context=".MainActivity">
      </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/addbutton"
         android:src="@drawable/pencil"
-        android:elevation="12dp"
+        app:elevation="6dp"
+        app:borderWidth="0dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

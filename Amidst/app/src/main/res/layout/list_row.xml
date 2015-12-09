@@ -5,6 +5,8 @@
     android:padding="8dp" >
 
 
+
+
     <!-- Clip -->
     <TextView
         android:id="@+id/clip"
@@ -13,9 +15,20 @@
         android:layout_alignParentLeft="true"
         android:linksClickable="true"
         android:textSize="15dip"
+        android:layout_toLeftOf="@+id/star"
         />
 
-    <!-- Rating -->
+
+    <!-- Starred -->
+    <ImageView
+        android:id="@+id/star"
+        android:src="@drawable/abc_btn_rating_star_off_mtrl_alpha"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:tint="@color/colorAccent"
+        />
+    <!-- TimeStamp -->
     <TextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
@@ -24,9 +37,11 @@
         android:layout_alignParentRight="true"
         android:typeface="sans"
         android:textSize="10dip"
-        android:paddingTop="25dp"
+        android:layout_below="@+id/star"
         android:layout_marginTop="1dip"
        />
+
+
 
 
 

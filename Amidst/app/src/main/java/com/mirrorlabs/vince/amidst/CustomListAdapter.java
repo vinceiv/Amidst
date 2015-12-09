@@ -32,6 +32,10 @@ public class CustomListAdapter extends BaseAdapter {
         this.clipboardItems = clipboardItems;
     }
 
+    public void remove(int position){
+        clipboardItems.remove(position);
+    }
+
     @Override
     public int getCount(){
         return clipboardItems.size();

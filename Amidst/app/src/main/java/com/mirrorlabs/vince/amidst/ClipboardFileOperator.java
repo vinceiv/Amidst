@@ -32,26 +32,45 @@ public class ClipboardFileOperator {
             + "Amidsts";
 
     File file = new File(PATH + File.separator + "cblogs.txt");
-    private boolean flagForRepeate = false;
+    File tempFile = new File(PATH + File.separator + "tempfile.txt");
+
+
+    public void removeItemFromClipboardFile(String removeItem) {
+
+        CharSequence checkFor = removeItem;
+        String currentLine;
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
+
+            while ((currentLine = bufferedReader.readLine()) != null) {
+
+                // if (currentLine.contains(checkFor)){
 
 
 
-    //public void removeItemFromClipboardFile(String removeItem){
 
-     //   CharSequence checkFor = removeItem;
+                if (!currentLine.contains(checkFor) ) {
+                    bufferedWriter.write(currentLine);
+                    if (currentLine.length() > 4)
+                        bufferedWriter.newLine();
+                }
+                bufferedWriter.flush();
 
-     //   try{
-      //      BufferedReader br = new BufferedReader(new FileReader(file));
-      //      String bufferedLine = br.readLine();
+            }
 
-        //    while (bufferedLine != null ){
-        //        if (bufferedLine.contains(removeItem))
-        //        {
+            bufferedWriter.close();
+            tempFile.renameTo(file);
 
-        //    }
-      //  }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.v("Delete!" , "Failed rewriting file");
+        }
+    }
 
-   // }}
+
+
 
 
 
