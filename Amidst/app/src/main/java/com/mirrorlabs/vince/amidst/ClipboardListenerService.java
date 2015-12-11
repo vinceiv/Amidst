@@ -32,22 +32,23 @@ public class ClipboardListenerService extends Service {
     public IBinder onBind(Intent intent) {
         return binder;
     }
+
     public class LocalBinder extends Binder {
         public ClipboardListenerService getServerInstance() {
             return ClipboardListenerService.this;
         }
     }
 
-    public void setFlagForRepeat (boolean flag){
+    public void setFlagForRepeat(boolean flag) {
         flagForRepeat = flag;
     }
 
-    public void copyItemToClipboard(String copyThisString){
+    public void copyItemToClipboard(String copyThisString) {
 
 
         CharSequence item = copyThisString;
 
-        ClipData newClip = ClipData.newPlainText("test" , item);
+        ClipData newClip = ClipData.newPlainText("test", item);
         cb.setPrimaryClip(newClip);
 
     }
@@ -77,9 +78,9 @@ public class ClipboardListenerService extends Service {
     //Override clipboardmanagers onPrimaryClipChanged()
     ClipboardManager.OnPrimaryClipChangedListener listener =
             new ClipboardManager.OnPrimaryClipChangedListener() {
-
                 @Override
                 public void onPrimaryClipChanged() {
+
 
                     //need to setup handle for images and other forms of clipdata
                     ClipData clipData = cb.getPrimaryClip();
@@ -109,10 +110,45 @@ public class ClipboardListenerService extends Service {
                     }
 
                     setFlagForRepeat(false);
-
                 }
 
+
             };
+
+
+    public void createClipJson (String clipboardString) {
+
+
+
+            String currentTime = String.valueOf(System.currentTimeMillis());
+
+
+            JSONObject jsobj = new JSONObject();
+
+
+            Boolean test = false;
+            try {
+
+                jsobj.put("Clip", clipboardString);
+                jsobj.put("Time", currentTime);
+                jsobj.put("Star", test);
+                Log.d("json", "json");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            if (!flagForRepeat) {
+                fileOperator.writeToClipboardFile(jsobj);
+
+            }
+
+            setFlagForRepeat(false);
+
+    }
+
+
+
 
 
     @Override

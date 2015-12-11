@@ -1,22 +1,28 @@
 package com.mirrorlabs.vince.amidst;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,9 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private CustomListAdapter adapter;
     private ClipboardFileOperator clipboardFileOperator = new ClipboardFileOperator();
     ClipboardListenerService listenerService;
-
-
-
+    final Context context = this;
+    private EditText result;
+    private EditText input = null;
 
     String lastLine = "";
 
@@ -154,10 +160,8 @@ public class MainActivity extends AppCompatActivity {
                 String str = test.getTitle();
                 listenerService.setFlagForRepeat(true);
                 listenerService.copyItemToClipboard(str);
-                Toast.makeText(getBaseContext(), str  + "... has been copied.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), str + "... has been copied.", Toast.LENGTH_SHORT).show();
             }
-
-
         });
 
         lView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
@@ -170,26 +174,74 @@ public class MainActivity extends AppCompatActivity {
                 adapter.remove(position);
                 adapter.notifyDataSetChanged();
                 lView.setAdapter(adapter);
-                Toast.makeText(getBaseContext() , item + " has been deleted." , Toast.LENGTH_SHORT ).show();
+                Toast.makeText(getBaseContext(), item + " has been deleted.", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
 
 
+        final FloatingActionButton test = (FloatingActionButton)findViewById(R.id.addbutton);
 
-        //CustomListAdapter updatedadapter = new CustomListAdapter(this, getItems());
 
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                LayoutInflater li = LayoutInflater.from(context);
+                View promptsView = li.inflate(R.layout.prompts, null);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+                alertDialogBuilder.setView(promptsView);
+
+                input = (EditText)promptsView.findViewById(R.id.userInput);
+
+
+
+
+
+                alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog , int id) {
+                        Toast.makeText(getBaseContext(), "test toast? " , Toast.LENGTH_SHORT).show();
+
+                        String wtf = input.getText().toString();
+                        listenerService.createClipJson(wtf);
+
+                        populateAdapter();
+                        adapter.notifyDataSetChanged();
+                        lView.setAdapter(adapter);
+
+
+                    }
+                }) .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                     public void onClick(DialogInterface dialog, int id) {
+                             dialog.cancel();
+                     }
+
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+            }
+        });
 
     }
 
+    public void populateAdapter(){
+        adapter = new CustomListAdapter(this, getItems());
+
+    }
 
     ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceDisconnected(ComponentName name) {
-            Toast.makeText(getBaseContext(), "Service is disconnected", 1000).show();
+           // Toast.makeText(getBaseContext(), "Service is disconnected", Toast.LENGTH_SHORT).show();
         }
 
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Toast.makeText(getBaseContext(), "Service is connected", 1000).show();
+           // Toast.makeText(getBaseContext(), "Service is connected", Toast.LENGTH_SHORT).show();
             ClipboardListenerService.LocalBinder mLocalBinder = (ClipboardListenerService.LocalBinder)service;
             listenerService = mLocalBinder.getServerInstance();
         }
@@ -274,7 +326,6 @@ public class MainActivity extends AppCompatActivity {
         lView.setAdapter(difadapter);
 
 
-        Toast.makeText(this, "ONRESUME CALLED", Toast.LENGTH_SHORT).show();
 
     }
 
