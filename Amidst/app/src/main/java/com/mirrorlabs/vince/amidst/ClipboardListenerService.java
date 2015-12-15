@@ -14,6 +14,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 
 
 /**
@@ -85,34 +86,52 @@ public class ClipboardListenerService extends Service {
                     //need to setup handle for images and other forms of clipdata
                     ClipData clipData = cb.getPrimaryClip();
                     //broadcastCustomIntent(temp);
-                    String clips = clipData.getItemAt(0).getText().toString();
-                    String currentTime = String.valueOf(System.currentTimeMillis());
+
+                    String MIMETYPE = "text/plain";
+                    String description = clipData.getDescription().getMimeType(0);
+
+                    if (description.equals("text/plain") || description.equals("text/html")
+                            ) {
 
 
-                    JSONObject jsobj = new JSONObject();
+                         try {
+
+                             String clips = clipData.getItemAt(0).getText().toString();
 
 
-                    Boolean test = false;
-                    try {
 
-                        jsobj.put("Clip", clips);
-                        jsobj.put("Time", currentTime);
-                        jsobj.put("Star", test);
-                        Log.d("json", "json");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        String currentTime = String.valueOf(System.currentTimeMillis());
+
+
+                        JSONObject jsobj = new JSONObject();
+
+
+                        Boolean test = false;
+                        try {
+
+                            jsobj.put("Clip", clips);
+                            jsobj.put("Time", currentTime);
+                            jsobj.put("Star", test);
+                            Log.d("json", "json");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        if (!flagForRepeat) {
+                            fileOperator.writeToClipboardFile(jsobj);
+
+                        }
+
+                        setFlagForRepeat(false);
+
+                         } catch (NullPointerException e) {
+                             e.printStackTrace();
+                         }
                     }
 
 
-                    if (!flagForRepeat) {
-                        fileOperator.writeToClipboardFile(jsobj);
-
-                    }
-
-                    setFlagForRepeat(false);
                 }
-
-
             };
 
 
@@ -139,7 +158,7 @@ public class ClipboardListenerService extends Service {
 
 
             if (!flagForRepeat) {
-                fileOperator.writeToClipboardFile(jsobj);
+        fileOperator.writeToClipboardFile(jsobj);
 
             }
 

@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         startService();
         setContentView(R.layout.activity_main);
 
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.background));
 
 
         //catch intents -- still needs work
@@ -144,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
         final List<ClipboardItem> clipboardItems = new LinkedList<>(getItems());
 
         adapter = new CustomListAdapter(this, clipboardItems);
-
 
 
         lView = (ListView)findViewById(R.id.clipboard);
