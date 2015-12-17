@@ -98,18 +98,20 @@ public class ClipboardListenerService extends Service {
 
                              String clips = clipData.getItemAt(0).getText().toString();
 
+                             String doctoredString = clips.replaceAll("\n", "&holder");
 
 
-                        String currentTime = String.valueOf(System.currentTimeMillis());
+
+                            String currentTime = String.valueOf(System.currentTimeMillis());
 
 
-                        JSONObject jsobj = new JSONObject();
+                          JSONObject jsobj = new JSONObject();
 
 
-                        Boolean test = false;
-                        try {
+                             Boolean test = false;
+                         try {
 
-                            jsobj.put("Clip", clips);
+                            jsobj.put("Clip", doctoredString);
                             jsobj.put("Time", currentTime);
                             jsobj.put("Star", test);
                             Log.d("json", "json");

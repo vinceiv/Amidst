@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
 
     <application
@@ -25,9 +26,15 @@
             </intent-filter>
         </activity>
 
+        <receiver android:name="com.mirrorlabs.vince.amidst.BootReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:enabled="true"
-            android:name=".ClipboardListenerService"
+            android:name="com.mirrorlabs.vince.amidst.ClipboardListenerService"
             />
 
 

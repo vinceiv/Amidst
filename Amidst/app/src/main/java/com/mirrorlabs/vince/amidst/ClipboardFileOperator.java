@@ -35,10 +35,16 @@ public class ClipboardFileOperator {
     File tempFile = new File(PATH + File.separator + "tempfile.txt");
 
 
+    /*
+    Replaced with test version
+    Writes lines by file
+     */
     public void removeItemFromClipboardFile(String removeItem) {
 
         CharSequence checkFor = removeItem;
         String currentLine;
+
+
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
@@ -70,6 +76,39 @@ public class ClipboardFileOperator {
     }
 
 
+    public void removeItemFromClipboardTest(int position , int adapterSize) {
+
+
+        int lineToRemove = (adapterSize - position)-1;
+        String lineToWrite;
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
+
+            for ( int i = 0 ; i < adapterSize; i++ ) {
+
+                lineToWrite = bufferedReader.readLine();
+
+                if ( i != lineToRemove ){
+                    bufferedWriter.write(lineToWrite);
+                    bufferedWriter.newLine();
+
+
+                }
+
+                bufferedWriter.flush();
+            }
+
+
+            bufferedWriter.close();
+            tempFile.renameTo(file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 

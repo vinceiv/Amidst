@@ -92,9 +92,10 @@ public class MainActivity extends AppCompatActivity {
                         Boolean test = (Boolean) obj.get("Star");
                         //Boolean test = Boolean.getBoolean(isStarred);
 
+                        String doctoredTitle = title.replaceAll("&holder" , "\n");
 
                         //create new clipboard item with parsed contextual info of clip
-                        ClipboardItem parsedItem = new ClipboardItem(title, time, test);
+                        ClipboardItem parsedItem = new ClipboardItem(doctoredTitle, time, test);
                         //add item to clipboardList that will populate the custom adapter
                         clipboardItems.add(0, parsedItem);
 
@@ -161,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
                 String str = test.getTitle();
                 listenerService.setFlagForRepeat(true);
                 listenerService.copyItemToClipboard(str);
+
+                int adapterSize = lView.getAdapter().getCount();
+
+                Toast.makeText(getBaseContext(), adapterSize + " items " + position + " position", Toast.LENGTH_SHORT).show();
                 Toast.makeText(getBaseContext(), str + "... has been copied.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -170,8 +175,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
+
+                int adapterSize = lView.getAdapter().getCount();
                 String item = test.getTitle();
-                clipboardFileOperator.removeItemFromClipboardFile(item);
+                //clipboardFileOperator.removeItemFromClipboardFile(item);
+                clipboardFileOperator.removeItemFromClipboardTest((position), adapterSize);
+
                 adapter.remove(position);
                 adapter.notifyDataSetChanged();
                 lView.setAdapter(adapter);
