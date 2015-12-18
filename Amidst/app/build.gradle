@@ -1,9 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'myreleasekey'
+            keyPassword 'v4v5ptz7'
+            storeFile file('myreleasekey.keystore')
+            storePassword 'v4v5ptz7'
+        }
+    }
     compileSdkVersion 22
     buildToolsVersion '23.0.1'
-
     defaultConfig {
         applicationId "com.mirrorlabs.vince.amidst"
         minSdkVersion 15

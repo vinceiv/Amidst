@@ -19,7 +19,7 @@
         />
 
 
-    <!-- Starred -->
+    <!-- Starred
     <ImageView
         android:id="@+id/star"
         android:src="@drawable/abc_btn_rating_star_off_mtrl_alpha"
@@ -28,7 +28,8 @@
         android:layout_alignParentRight="true"
         android:tint="@color/colorAccent"
         />
-    <!-- TimeStamp -->
+
+    TimeStamp -->
     <TextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
