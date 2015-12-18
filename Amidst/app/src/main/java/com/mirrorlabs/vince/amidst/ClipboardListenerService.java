@@ -5,16 +5,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 
 import android.content.Intent;
-import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
-
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
+import android.widget.Toast;
 
 
 /**
@@ -23,52 +16,26 @@ import java.io.IOException;
 public class ClipboardListenerService extends Service {
 
     private final String TAG = "CLIPBOARD_SERVICE";
-    private ClipboardFileOperator fileOperator = new ClipboardFileOperator();
+    private ClipboardFileOperator fileOperator;
     protected ClipboardManager cb;
-    private boolean flagForRepeat = false;
-
-    IBinder binder = new LocalBinder();
+    private boolean startedFromBoot = true;
 
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
-    }
-
-    public class LocalBinder extends Binder {
-        public ClipboardListenerService getServerInstance() {
-            return ClipboardListenerService.this;
-        }
-    }
-
-    public void setFlagForRepeat(boolean flag) {
-        flagForRepeat = flag;
-    }
-
-    public void copyItemToClipboard(String copyThisString) {
+       return null;
+   }
 
 
-        CharSequence item = copyThisString;
-
-        ClipData newClip = ClipData.newPlainText("test", item);
-        cb.setPrimaryClip(newClip);
-
-    }
-
-
-    public void broadcastCustomIntent(String clipData) {
-
-        Intent intent = new Intent("ClipboardUpdated");
-        intent.putExtra("clip", clipData);
-        sendBroadcast(intent);
-        Log.v("BROADCASTED: ", clipData);
-
-    }
 
     /*
     *    Upon creation set up listener so that callback will be invoked
     */
+    @Override
     public void onCreate() {
 
+
+        super.onCreate();
+        fileOperator = new ClipboardFileOperator();
         cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         cb.addPrimaryClipChangedListener(listener);
 
@@ -87,7 +54,6 @@ public class ClipboardListenerService extends Service {
                     ClipData clipData = cb.getPrimaryClip();
                     //broadcastCustomIntent(temp);
 
-                    String MIMETYPE = "text/plain";
                     String description = clipData.getDescription().getMimeType(0);
 
                     if (description.equals("text/plain") || description.equals("text/html")
@@ -97,35 +63,16 @@ public class ClipboardListenerService extends Service {
                          try {
 
                              String clips = clipData.getItemAt(0).getText().toString();
-
                              String doctoredString = clips.replaceAll("\n", "&holder");
 
 
 
-                            String currentTime = String.valueOf(System.currentTimeMillis());
+                             ClipboardFileOperator fileop = new ClipboardFileOperator();
 
 
-                          JSONObject jsobj = new JSONObject();
+                             fileop.createAndWriteClipJson(doctoredString);
+                             //MainActivity.clipboardFileOperator.createAndWriteClipJson(doctoredString);
 
-
-                             Boolean test = false;
-                         try {
-
-                            jsobj.put("Clip", doctoredString);
-                            jsobj.put("Time", currentTime);
-                            jsobj.put("Star", test);
-                            Log.d("json", "json");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        if (!flagForRepeat) {
-                            fileOperator.writeToClipboardFile(jsobj);
-
-                        }
-
-                        setFlagForRepeat(false);
 
                          } catch (NullPointerException e) {
                              e.printStackTrace();
@@ -136,58 +83,36 @@ public class ClipboardListenerService extends Service {
                 }
             };
 
-
-    public void createClipJson (String clipboardString) {
-
-
-
-            String currentTime = String.valueOf(System.currentTimeMillis());
-
-
-            JSONObject jsobj = new JSONObject();
-
-
-            Boolean test = false;
-            try {
-
-                jsobj.put("Clip", clipboardString);
-                jsobj.put("Time", currentTime);
-                jsobj.put("Star", test);
-                Log.d("json", "json");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-            if (!flagForRepeat) {
-        fileOperator.writeToClipboardFile(jsobj);
-
-            }
-
-            setFlagForRepeat(false);
-
+    private void setStartedFromBoot (boolean startedFromBoot) {
+        this.startedFromBoot = startedFromBoot;
     }
-
-
-
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // Let it continue running until it is stopped.
-        // Toast.makeText(this, "Clipboard Service Started", Toast.LENGTH_SHORT).show();
 
-        return START_STICKY;
+         Toast.makeText(this, "Clipboard Service Started", Toast.LENGTH_SHORT).show();
+
+        if (intent == null) {
+          setStartedFromBoot(false);
+            //startService(new Intent(getBaseContext(), ClipboardListenerService.class));
+
+            return START_STICKY;
+
+        }
+
+        else {
+            Boolean setBootable = intent.getBooleanExtra("test", true);
+            setStartedFromBoot(setBootable);
+           // startService(new Intent(getBaseContext(), ClipboardListenerService.class));
+            return START_STICKY;
+        }
     }
 
     public void onDestroy() {
         super.onDestroy();
         cb.removePrimaryClipChangedListener(listener);
     }
-
-
-
-
 
 
 }

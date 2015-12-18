@@ -27,6 +27,8 @@ public class ClipboardFileOperator {
 
     private String mPreviousText = "";
     private final String TAG = "FILE_OPERATOR";
+    private boolean fromClick = false;
+
 
     String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
             + "Amidsts";
@@ -35,49 +37,40 @@ public class ClipboardFileOperator {
     File tempFile = new File(PATH + File.separator + "tempfile.txt");
 
 
-    /*
-    Replaced with test version
-    Writes lines by file
-     */
-    public void removeItemFromClipboardFile(String removeItem) {
 
-        CharSequence checkFor = removeItem;
-        String currentLine;
+    public void setFlagForRepeat(boolean repeat){
+        fromClick = repeat;
+    }
+
+    public void createAndWriteClipJson (String clipboardString) {
 
 
+        String currentTime = String.valueOf(System.currentTimeMillis());
+        JSONObject jsobj = new JSONObject();
+
+        //This needs replaced with handling of starred
+        Boolean test = false;
 
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
-
-            while ((currentLine = bufferedReader.readLine()) != null) {
-
-                // if (currentLine.contains(checkFor)){
-
-
-
-
-                if (!currentLine.contains(checkFor) ) {
-                    bufferedWriter.write(currentLine);
-                    if (currentLine.length() > 4)
-                        bufferedWriter.newLine();
-                }
-                bufferedWriter.flush();
-
-            }
-
-            bufferedWriter.close();
-            tempFile.renameTo(file);
-
-        } catch (IOException e) {
+            jsobj.put("Clip", clipboardString);
+            jsobj.put("Time", currentTime);
+            jsobj.put("Star", test);
+            Log.d("json", "json");
+        } catch (JSONException e) {
             e.printStackTrace();
-            Log.v("Delete!" , "Failed rewriting file");
         }
+
+
+        if (!fromClick) {
+            writeToClipboardFile(jsobj);
+            Log.v("ISSUE" , "from click is " + fromClick);
+        }
+
+        fromClick = false;
     }
 
 
     public void removeItemFromClipboardTest(int position , int adapterSize) {
-
 
         int lineToRemove = (adapterSize - position)-1;
         String lineToWrite;
@@ -93,13 +86,10 @@ public class ClipboardFileOperator {
                 if ( i != lineToRemove ){
                     bufferedWriter.write(lineToWrite);
                     bufferedWriter.newLine();
-
-
                 }
 
                 bufferedWriter.flush();
             }
-
 
             bufferedWriter.close();
             tempFile.renameTo(file);
@@ -109,9 +99,6 @@ public class ClipboardFileOperator {
         }
 
     }
-
-
-
 
 
     public void writeToClipboardFile(JSONObject jsonObject) {

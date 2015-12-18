@@ -1,28 +1,19 @@
 package com.mirrorlabs.vince.amidst;
 
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -44,16 +35,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ListView lView;
-    protected LinkedList<String> clipboardList = new LinkedList<>();
-    ArrayAdapter<String> arrayAdapter;
     private List<ClipboardItem> clipboardItems = new LinkedList<>();
     private CustomListAdapter adapter;
-    private ClipboardFileOperator clipboardFileOperator = new ClipboardFileOperator();
-    ClipboardListenerService listenerService;
+    protected static ClipboardFileOperator clipboardFileOperator;
     final Context context = this;
-    private EditText result;
     private EditText input = null;
-
+    private ClipboardOperator clipboardOperator;
     String lastLine = "";
 
     String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
@@ -133,14 +120,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        startService();
+        //Intent serviceIntent = new Intent("com.mirrorlabs.vince.amidst.ClipboardListenerService" );
+        //serviceIntent.putExtra("test" , false);
+        //startService(serviceIntent);
+       startService();
+
         setContentView(R.layout.activity_main);
 
+        clipboardFileOperator = new ClipboardFileOperator();
+        clipboardOperator = new ClipboardOperator(this);
+
         getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.background));
-
-
-        //catch intents -- still needs work
-        registerReceiver(mReceiver, new IntentFilter("clip"));
 
         initApp();
 
@@ -158,15 +148,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
-                String str = test.getTitle();
-                listenerService.setFlagForRepeat(true);
-                listenerService.copyItemToClipboard(str);
 
-                int adapterSize = lView.getAdapter().getCount();
+                ClipboardItem clipboardItem = (ClipboardItem) lView.getAdapter().getItem(position);
+                String clipItem = clipboardItem.getTitle();
 
-                Toast.makeText(getBaseContext(), adapterSize + " items " + position + " position", Toast.LENGTH_SHORT).show();
-                Toast.makeText(getBaseContext(), str + "... has been copied.", Toast.LENGTH_SHORT).show();
+                clipboardFileOperator.setFlagForRepeat(true);
+                clipboardOperator.copyItemToClipboard(clipItem);
+
+                Toast.makeText(getBaseContext(), clipItem + "... has been copied.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -177,14 +166,13 @@ public class MainActivity extends AppCompatActivity {
                 ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
 
                 int adapterSize = lView.getAdapter().getCount();
-                String item = test.getTitle();
-                //clipboardFileOperator.removeItemFromClipboardFile(item);
+                String clipItem = test.getTitle();
                 clipboardFileOperator.removeItemFromClipboardTest((position), adapterSize);
 
                 adapter.remove(position);
                 adapter.notifyDataSetChanged();
                 lView.setAdapter(adapter);
-                Toast.makeText(getBaseContext(), item + " has been deleted.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), clipItem + " has been deleted.", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
@@ -206,17 +194,13 @@ public class MainActivity extends AppCompatActivity {
 
                 input = (EditText)promptsView.findViewById(R.id.userInput);
 
-
-
-
-
                 alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog , int id) {
-                        Toast.makeText(getBaseContext(), "test toast? " , Toast.LENGTH_SHORT).show();
 
-                        String wtf = input.getText().toString();
-                        listenerService.createClipJson(wtf);
+
+                        String inputtedClip = input.getText().toString();
+                        clipboardFileOperator.createAndWriteClipJson(inputtedClip);
 
                         populateAdapter();
                         adapter.notifyDataSetChanged();
@@ -245,17 +229,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    ServiceConnection mConnection = new ServiceConnection() {
-        public void onServiceDisconnected(ComponentName name) {
-           // Toast.makeText(getBaseContext(), "Service is disconnected", Toast.LENGTH_SHORT).show();
-        }
+    //ServiceConnection mConnection = new ServiceConnection() {
+    //    public void onServiceDisconnected(ComponentName name) {
+     //      // Toast.makeText(getBaseContext(), "Service is disconnected", Toast.LENGTH_SHORT).show();
+     //   }
 
-        public void onServiceConnected(ComponentName name, IBinder service) {
-           // Toast.makeText(getBaseContext(), "Service is connected", Toast.LENGTH_SHORT).show();
-            ClipboardListenerService.LocalBinder mLocalBinder = (ClipboardListenerService.LocalBinder)service;
-            listenerService = mLocalBinder.getServerInstance();
-        }
-    };
+      //  public void onServiceConnected(ComponentName name, IBinder service) {
+      //     // Toast.makeText(getBaseContext(), "Service is connected", Toast.LENGTH_SHORT).show();
+      //      ClipboardListenerService.LocalBinder mLocalBinder = (ClipboardListenerService.LocalBinder)service;
+       //     listenerService = mLocalBinder.getServerInstance();
+      //  }
+   // };
 
 
 
@@ -303,29 +287,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void startService() {
 
-        Intent mIntent = new Intent(this, ClipboardListenerService.class);
-        bindService(mIntent, mConnection, BIND_AUTO_CREATE);
+        //UNDUE THESE TWO
+        //Intent mIntent = new Intent(this, ClipboardListenerService.class);
+       // bindService(mIntent, mConnection, BIND_AUTO_CREATE);
 
 
+       startService(new Intent(getBaseContext(), ClipboardListenerService.class));
 
-       // startService(new Intent(getBaseContext(), ClipboardListenerService.class));
 
-        startService(new Intent(getBaseContext(), RecentApps.class));
     }
 
-
-    public BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Bundle b = intent.getExtras();
-
-            String clip = b.getString("clip");
-            //clipboardList.add(0, clip);
-            Log.v("BROADCAST RECEIVED: ", clip);
-            lView.invalidate();
-        }
-    };
 
 
     @Override
@@ -334,9 +305,6 @@ public class MainActivity extends AppCompatActivity {
         lView.invalidate();
         CustomListAdapter difadapter = new CustomListAdapter(this, getItems());
         lView.setAdapter(difadapter);
-
-
-
     }
 
     //set to false to remove options
