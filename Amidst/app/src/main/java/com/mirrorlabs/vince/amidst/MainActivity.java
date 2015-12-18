@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 ClipboardItem clipboardItem = (ClipboardItem) lView.getAdapter().getItem(position);
                 String clipItem = clipboardItem.getTitle();
 
-                clipboardFileOperator.setFlagForRepeat(true);
+                ClipboardListenerService.fileOperator.setFlagForRepeat(true);
                 clipboardOperator.copyItemToClipboard(clipItem);
 
                 Toast.makeText(getBaseContext(), clipItem + "... has been copied.", Toast.LENGTH_SHORT).show();

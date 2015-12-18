@@ -16,15 +16,14 @@ import android.widget.Toast;
 public class ClipboardListenerService extends Service {
 
     private final String TAG = "CLIPBOARD_SERVICE";
-    private ClipboardFileOperator fileOperator;
+    protected static ClipboardFileOperator fileOperator;
     protected ClipboardManager cb;
     private boolean startedFromBoot = true;
 
     @Override
     public IBinder onBind(Intent intent) {
-       return null;
-   }
-
+        return null;
+    }
 
 
     /*
@@ -60,30 +59,31 @@ public class ClipboardListenerService extends Service {
                             ) {
 
 
-                         try {
+                        try {
 
-                             String clips = clipData.getItemAt(0).getText().toString();
-                             String doctoredString = clips.replaceAll("\n", "&holder");
-
-
-
-                             ClipboardFileOperator fileop = new ClipboardFileOperator();
+                            String clips = clipData.getItemAt(0).getText().toString();
+                            String doctoredString = clips.replaceAll("\n", "&holder");
 
 
-                             fileop.createAndWriteClipJson(doctoredString);
-                             //MainActivity.clipboardFileOperator.createAndWriteClipJson(doctoredString);
 
+                            if (startedFromBoot) {
+                                fileOperator.createAndWriteClipJson(doctoredString);
+                            }
 
-                         } catch (NullPointerException e) {
-                             e.printStackTrace();
-                         }
+                            if (!startedFromBoot) {
+                                MainActivity.clipboardFileOperator.createAndWriteClipJson(doctoredString);
+                            }
+
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
 
 
                 }
             };
 
-    private void setStartedFromBoot (boolean startedFromBoot) {
+    private void setStartedFromBoot(boolean startedFromBoot) {
         this.startedFromBoot = startedFromBoot;
     }
 
@@ -91,23 +91,42 @@ public class ClipboardListenerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-         Toast.makeText(this, "Clipboard Service Started", Toast.LENGTH_SHORT).show();
+        try {
+            boolean test = intent.getExtras().getBoolean("test");
 
-        if (intent == null) {
-          setStartedFromBoot(false);
-            //startService(new Intent(getBaseContext(), ClipboardListenerService.class));
+            Toast.makeText(this, "in try" , Toast.LENGTH_SHORT).show();
 
-            return START_STICKY;
+            //  Toast.makeText(this, test + "Clipboard Service Started", Toast.LENGTH_SHORT).show();
 
-        }
 
-        else {
-            Boolean setBootable = intent.getBooleanExtra("test", true);
-            setStartedFromBoot(setBootable);
-           // startService(new Intent(getBaseContext(), ClipboardListenerService.class));
+            if (intent == null) {
+                setStartedFromBoot(false);
+                //startService(new Intent(getBaseContext(), ClipboardListenerService.class));
+
+                Toast.makeText(this, " == null", Toast.LENGTH_SHORT).show();
+                return START_STICKY;
+
+            }
+
+            if (test == false) {
+                startService(new Intent(getBaseContext(), ClipboardListenerService.class));
+                setStartedFromBoot(false);
+                Toast.makeText(this, "test == false", Toast.LENGTH_SHORT).show();
+                return START_STICKY;
+            }
+            else{
+                Boolean setBootable = intent.getBooleanExtra("test", true);
+                Toast.makeText(this, "in else statement get boolean extre", Toast.LENGTH_SHORT).show();
+                setStartedFromBoot(setBootable);
+                // startService(new Intent(getBaseContext(), ClipboardListenerService.class));
+                return START_STICKY;
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
             return START_STICKY;
         }
     }
+
 
     public void onDestroy() {
         super.onDestroy();
