@@ -76,13 +76,12 @@ public class MainActivity extends AppCompatActivity {
 
                         Long time = Long.valueOf(timestamp);
 
-                        Boolean test = (Boolean) obj.get("Star");
-                        //Boolean test = Boolean.getBoolean(isStarred);
+                        Boolean starTrue = (Boolean) obj.get("Star");
 
                         String doctoredTitle = title.replaceAll("&holder" , "\n");
 
                         //create new clipboard item with parsed contextual info of clip
-                        ClipboardItem parsedItem = new ClipboardItem(doctoredTitle, time, test);
+                        ClipboardItem parsedItem = new ClipboardItem(doctoredTitle, time, starTrue);
                         //add item to clipboardList that will populate the custom adapter
                         clipboardItems.add(0, parsedItem);
 
@@ -123,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         //Intent serviceIntent = new Intent("com.mirrorlabs.vince.amidst.ClipboardListenerService" );
         //serviceIntent.putExtra("test" , false);
         //startService(serviceIntent);
-       startService();
+        startService();
 
         setContentView(R.layout.activity_main);
 
@@ -137,12 +136,10 @@ public class MainActivity extends AppCompatActivity {
         final List<ClipboardItem> clipboardItems = new LinkedList<>(getItems());
 
         adapter = new CustomListAdapter(this, clipboardItems);
+        lView = (ListView) findViewById(R.id.clipboard);
+        lView.setAdapter(adapter);
 
-
-        if(context.getPackageName().equals("com.mirrorlabs.vince.amidst")) {
-
-            lView = (ListView) findViewById(R.id.clipboard);
-            lView.setAdapter(adapter);
+        if (context.getPackageName().equals("com.mirrorlabs.vince.amidst")) {
 
 
             lView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -227,16 +224,115 @@ public class MainActivity extends AppCompatActivity {
         } // end of if to check if it is paid version or not
 
 
-
-
-
         if (context.getPackageName().equals("com.mirrorlabs.vince.amidst.paid")) {
 
 
+            lView.setOnItemClickListener(new ListView.OnItemClickListener() {
 
-            
-        }
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                    ClipboardItem clipboardItem = (ClipboardItem) lView.getAdapter().getItem(position);
+                    String clipItem = clipboardItem.getTitle();
+
+                    ClipboardListenerService.fileOperator.setFlagForRepeat(true);
+                    clipboardOperator.copyItemToClipboard(clipItem);
+
+                    Toast.makeText(getBaseContext(), clipItem + "... has been copied.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+            SwipeDismissListViewTouchListener touchListener =
+                    new SwipeDismissListViewTouchListener(lView,
+                            new SwipeDismissListViewTouchListener.DismissCallbacks() {
+
+
+                                @Override
+                                public boolean canDismiss(int position) {
+                                    return true;
+                                }
+
+
+                                @Override
+                                public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                                    for (int position : reverseSortedPositions) {
+                                        ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
+
+                                        int adapterSize = lView.getAdapter().getCount();
+                                        String clipItem = test.getTitle();
+                                        clipboardFileOperator.removeItemFromClipboardTest((position), adapterSize);
+
+                                        adapter.remove(position);
+                                        adapter.notifyDataSetChanged();
+                                        lView.setAdapter(adapter);
+                                        Toast.makeText(getBaseContext(), clipItem + " has been deleted.", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+
+
+
+
+            lView.setOnTouchListener(touchListener);
+            lView.setOnScrollListener(touchListener.makeScrollListener());
+
+
+
+            final FloatingActionButton test = (FloatingActionButton) findViewById(R.id.addbutton);
+
+
+            test.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+
+                    LayoutInflater li = LayoutInflater.from(context);
+                    View promptsView = li.inflate(R.layout.prompts, null);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+                    alertDialogBuilder.setView(promptsView);
+
+                    input = (EditText) promptsView.findViewById(R.id.userInput);
+
+                    alertDialogBuilder.setCancelable(false)
+                            .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+
+                                    String inputtedClip = input.getText().toString();
+                                    clipboardFileOperator.createAndWriteClipJson(inputtedClip);
+
+                                    populateAdapter();
+                                    adapter.notifyDataSetChanged();
+                                    lView.setAdapter(adapter);
+
+
+                                }
+                            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+
+                    });
+
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+
+                }
+
+            });
+
+            }
+
+
+
     }
+
 
     public void populateAdapter(){
         adapter = new CustomListAdapter(this, getItems());
