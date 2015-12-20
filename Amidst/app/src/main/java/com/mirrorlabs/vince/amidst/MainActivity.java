@@ -139,89 +139,103 @@ public class MainActivity extends AppCompatActivity {
         adapter = new CustomListAdapter(this, clipboardItems);
 
 
-        lView = (ListView)findViewById(R.id.clipboard);
-        lView.setAdapter(adapter);
+        if(context.getPackageName().equals("com.mirrorlabs.vince.amidst")) {
+
+            lView = (ListView) findViewById(R.id.clipboard);
+            lView.setAdapter(adapter);
 
 
-        lView.setOnItemClickListener(new ListView.OnItemClickListener() {
+            lView.setOnItemClickListener(new ListView.OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
-                ClipboardItem clipboardItem = (ClipboardItem) lView.getAdapter().getItem(position);
-                String clipItem = clipboardItem.getTitle();
-
-                ClipboardListenerService.fileOperator.setFlagForRepeat(true);
-                clipboardOperator.copyItemToClipboard(clipItem);
-
-                Toast.makeText(getBaseContext(), clipItem + "... has been copied.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        lView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
-
-                int adapterSize = lView.getAdapter().getCount();
-                String clipItem = test.getTitle();
-                clipboardFileOperator.removeItemFromClipboardTest((position), adapterSize);
-
-                adapter.remove(position);
-                adapter.notifyDataSetChanged();
-                lView.setAdapter(adapter);
-                Toast.makeText(getBaseContext(), clipItem + " has been deleted.", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-        final FloatingActionButton test = (FloatingActionButton)findViewById(R.id.addbutton);
+                    ClipboardItem clipboardItem = (ClipboardItem) lView.getAdapter().getItem(position);
+                    String clipItem = clipboardItem.getTitle();
+
+                    ClipboardListenerService.fileOperator.setFlagForRepeat(true);
+                    clipboardOperator.copyItemToClipboard(clipItem);
+
+                    Toast.makeText(getBaseContext(), clipItem + "... has been copied.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            lView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    ClipboardItem test = (ClipboardItem) lView.getAdapter().getItem(position);
+
+                    int adapterSize = lView.getAdapter().getCount();
+                    String clipItem = test.getTitle();
+                    clipboardFileOperator.removeItemFromClipboardTest((position), adapterSize);
+
+                    adapter.remove(position);
+                    adapter.notifyDataSetChanged();
+                    lView.setAdapter(adapter);
+                    Toast.makeText(getBaseContext(), clipItem + " has been deleted.", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
 
 
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            final FloatingActionButton test = (FloatingActionButton) findViewById(R.id.addbutton);
 
 
-                LayoutInflater li = LayoutInflater.from(context);
-                View promptsView = li.inflate(R.layout.prompts, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-
-                alertDialogBuilder.setView(promptsView);
-
-                input = (EditText)promptsView.findViewById(R.id.userInput);
-
-                alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog , int id) {
+            test.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
 
-                        String inputtedClip = input.getText().toString();
-                        clipboardFileOperator.createAndWriteClipJson(inputtedClip);
+                    LayoutInflater li = LayoutInflater.from(context);
+                    View promptsView = li.inflate(R.layout.prompts, null);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
-                        populateAdapter();
-                        adapter.notifyDataSetChanged();
-                        lView.setAdapter(adapter);
+                    alertDialogBuilder.setView(promptsView);
+
+                    input = (EditText) promptsView.findViewById(R.id.userInput);
+
+                    alertDialogBuilder.setCancelable(false)
+                            .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
 
 
-                    }
-                }) .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    String inputtedClip = input.getText().toString();
+                                    clipboardFileOperator.createAndWriteClipJson(inputtedClip);
 
-                     public void onClick(DialogInterface dialog, int id) {
-                             dialog.cancel();
-                     }
+                                    populateAdapter();
+                                    adapter.notifyDataSetChanged();
+                                    lView.setAdapter(adapter);
 
-        });
 
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+                                }
+                            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 
-            }
-        });
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
 
+                    });
+
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+
+                }
+
+            });
+        } // end of if to check if it is paid version or not
+
+
+
+
+
+        if (context.getPackageName().equals("com.mirrorlabs.vince.amidst.paid")) {
+
+
+
+            
+        }
     }
 
     public void populateAdapter(){
