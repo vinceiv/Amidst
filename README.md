@@ -1,4 +1,6 @@
+<p align="center">
 ![;p](https://github.com/vinceiv/Amidst/blob/master/share/amidstbanner.png) 
+</p>
 # Amidst Clipboard manager
 > Open source Android clipboard manager
 
