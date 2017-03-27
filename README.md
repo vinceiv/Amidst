@@ -7,3 +7,6 @@
 - Add favorites
 - Free app swipe to delete
 - Handle all mime types
+
+## License
+MIT
