@@ -1,6 +1,6 @@
-
+![alt text](https://github.com/vinceiv/Amidst/blob/master/share/amidstbanner.png ":p")
 # Amidst Clipboard manager
-> Open source clipboard manager
+> Open source Android clipboard manager
 
 ## To do
 - Resize table cells
