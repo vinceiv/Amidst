@@ -1,4 +1,4 @@
--> ![alt text](https://github.com/vinceiv/Amidst/blob/master/share/amidstbanner.png ":p") <-
+![;p](https://github.com/vinceiv/Amidst/blob/master/share/amidstbanner.png) 
 # Amidst Clipboard manager
 > Open source Android clipboard manager
 
